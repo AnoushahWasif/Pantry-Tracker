@@ -1,9 +1,10 @@
 // src/components/ItemList.js
 import { useEffect, useState } from 'react';
-import { db } from '../../firebase'; // Ensure this path is correct
-import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import styles from './ItemList.module.css'; // Import CSS module
 
-const ItemList = ({ searchTerm }) => {
+const ItemList = ({ searchTerm, onEdit }) => {
   const [items, setItems] = useState([]);
 
   const fetchItems = async () => {
@@ -16,30 +17,34 @@ const ItemList = ({ searchTerm }) => {
     fetchItems();
   }, []);
 
+  const handleDelete = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'pantryItems', id));
+      fetchItems(); // Refresh the list after deletion
+    } catch (error) {
+      console.error('Error deleting item: ', error);
+    }
+  };
+
   const filteredItems = items.filter(item =>
     item.name?.toLowerCase().includes(searchTerm?.toLowerCase() || '')
   );
 
   return (
-    <ul style={styles.list}>
+    <ul className={styles.list}>
       {filteredItems.map(item => (
-        <li key={item.id} style={styles.item}>
-          <strong>{item.name}</strong> - {item.category} - Expiration: {item.expirationDate} - Quantity: {item.quantity} {item.unit}
+        <li key={item.id} className={styles.item}>
+          <div className={styles.itemInfo}>
+            <strong>{item.name}</strong> - {item.category} - Expiration: {item.expirationDate} - Quantity: {item.quantity} {item.unit}
+          </div>
+          <div className={styles.itemActions}>
+            <button onClick={() => onEdit(item)} className={styles.button}>Edit</button>
+            <button onClick={() => handleDelete(item.id)} className={styles.button}>Delete</button>
+          </div>
         </li>
       ))}
     </ul>
   );
-};
-
-const styles = {
-  list: {
-    listStyleType: 'none',
-    padding: 0,
-  },
-  item: {
-    padding: '10px',
-    borderBottom: '1px solid #ddd',
-  },
 };
 
 export default ItemList;
