@@ -68,6 +68,5 @@ To deploy the application on Vercel:
 - Image classification using GPT Vision API.
 - Recipe suggestion feature based on pantry contents using OpenAI API.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Access it online
+- Use this link to access my app https://pantry-tracker-3sg4.vercel.app/
